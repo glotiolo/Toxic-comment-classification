@@ -18,7 +18,6 @@ labels = ['obscene','insult','toxic',
 
 
 def main():
-    
     print("\n")
     print("Summary Statistics")
     
