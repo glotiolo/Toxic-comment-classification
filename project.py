@@ -15,7 +15,6 @@ from sklearn import metrics
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 
-
 train_data = pd.read_csv('train.csv')
 labels = ['obscene','insult','toxic',
               'severe_toxic','identity_hate','threat']
@@ -24,7 +23,6 @@ labels = ['obscene','insult','toxic',
 
 
 def train():
-    
     x_vals = train_data["comment_text"]
     
     """
@@ -56,11 +54,10 @@ def train():
                              use_idf=1,
                              smooth_idf=1, 
                              sublinear_tf=1,
+
                              max_features = 20000
                              )
-    
-    
-    
+        
     """
     We perform fit transform on the training data so that we can learn 
     both the parameters of scaling on the train and scale the data. On the test
