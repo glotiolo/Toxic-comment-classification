@@ -9,11 +9,11 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
-from sklearn.model_selection import cross_val_score
 from sklearn import metrics
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from time import time
+
 
 
 test = pd.read_csv('test.csv')
@@ -27,10 +27,10 @@ x_vals = train_data[COMMENT]
    
 #dataFrame.iloc[rows,columns] 
 y_vals = train_data.iloc[:,2:]
-
+    
 """
-    Split the training data into training set and test set in 80:20 
-    ratio. Most recommended split
+Split the training data into training set and test set in 80:20 
+ratio. Most recommended split
 """
 X_train, X_test, Y_train, Y_test = train_test_split(x_vals, y_vals, 
                             test_size= 0.2,random_state=13)
@@ -63,7 +63,7 @@ test_vect = word_vectorizer.transform(X_test)
 real_test = word_vectorizer.transform(test_x)
 
 
-#Fit a model for each dependent variable
+#Fit a model for each class
 def get_model(target,x):
     y = target.values
     model = LogisticRegression(solver='sag',C=13)
