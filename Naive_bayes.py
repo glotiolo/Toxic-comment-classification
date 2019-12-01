@@ -1,6 +1,5 @@
 #Import Gaussian Naive Bayes model
 from sklearn.naive_bayes import MultinomialNB
-from sklearn import metrics
 from sklearn.metrics import classification_report, confusion_matrix
 
 import pandas as pd
@@ -8,16 +7,16 @@ from nltk.tokenize import TweetTokenizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 
-train_data = pd.read_csv('train.csv')
-test_data = pd.read_csv('test.csv')
+train_data = pd.read_csv('clean_train.csv')
+train_data.comment_text = train_data.comment_text.astype(str)
 
 
 
 def train():
-    df_label = train_data.iloc[:, 2:8]
+    df_label = train_data["toxic"].values
 
     X_train, X_test, y_train, y_test = train_test_split(
-        train_data["comment_text"], df_label, test_size=0.2, random_state=109)
+        train_data["comment_text"], df_label, test_size=0.2, random_state=13)
 
     # Tokenization with NLTK and training
     word_vectorizer = TfidfVectorizer(
@@ -37,34 +36,26 @@ def train():
 
     test_vect = word_vectorizer.transform(X_test)
 
-    return training_vect, test_vect, y_train, y_test, word_vectorizer
+    return training_vect, test_vect, y_train, y_test
 
 
 def main():
-    classes = ["obscene","insult","toxic","severe_toxic","identity_hate","threat"]
     x_train, x_test, y_train, y_test = train()
-    print("done1")
 
     #Create a Gaussian Classifier
     gnb = MultinomialNB()
-
-    #Train the model using the training sets
-    for label in classes:
-        print("Fitting {}".format(label))
-        train_target = y_train[label]
-        test_target = y_test[label]
-
-        gnb.fit(x_train, train_target)
-        #Predict the response for test dataset
-        y_pred = gnb.predict(x_test)
-
-        # Model Accuracy, how often is the classifier correct?
-        acc = gnb.score(x_test,test_target)
-        print("{} accuracy is {}".format(label,acc))
-        print(confusion_matrix(test_target, y_pred))
-        print(classification_report(test_target, y_pred))
-
-
+    
+    gnb.fit(x_train,y_train)
+    #Predict the response for test dataset
+    y_pred = gnb.predict(x_test)
+    
+    # Model Accuracy, how often is the classifier correct?
+    acc = gnb.score(x_test,y_test)
+    
+    print("Acuracy is {}".format(acc))
+    print(confusion_matrix(y_test, y_pred))
+    print(classification_report(y_test, y_pred))
+    
 
 if __name__ == "__main__" :
     main()
