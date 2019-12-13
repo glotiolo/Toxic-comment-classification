@@ -3,7 +3,7 @@
 Name:Gad Kibet & Harrison Govan
 Project: CS701 Senior seminar
 """
-
+#import libraries 
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -15,11 +15,12 @@ from time import time
 
 
 
-COMMENT = "comment_text"
+
+#Load data
 train_data = pd.read_csv('clean_train.csv')
 train_data.comment_text = train_data.comment_text.astype(str)
 
-
+COMMENT = "comment_text"
 x_vals = train_data[COMMENT]
 y_vals = train_data["toxic"]
 
@@ -55,11 +56,12 @@ test_vect = word_vectorizer.transform(X_test)
 
 #get model and fit
 def get_model(x,y):
-    model = LogisticRegression(solver='liblinear',C=0.1,penalty = 'l1')
+    model = LogisticRegression(solver='liblinear',penalty = 'l1')
     return model.fit(x,y)
 
 
-def train():
+""" Evaluate"""
+def main():
     start_time = time()
     classifier = get_model(training_vect,Y_train)
     y_pred = classifier.predict(test_vect)
@@ -71,17 +73,19 @@ def train():
         positive rate
      """
     auc_score = metrics.roc_auc_score(Y_test, y_pred_prob)
+    accuracy = metrics.accuracy_score(Y_test,y_pred)
+    print("The accuracy is: {}".format(accuracy))
     print("CV ROC_AUC score {}\n".format(auc_score))
     print("Confusion Matrix:")
     print(confusion_matrix(Y_test, y_pred))
     print(classification_report(Y_test,y_pred))
     print("The duration was: {} seconds".format(round(time()-start_time,2)))
     
-    return y_pred,y_pred_prob,classifier
+    
     
      
 if __name__ == "__main__":
-    y_pred,y_pred_prob,classifier = train()
+    main()
     
     
     

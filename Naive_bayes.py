@@ -1,7 +1,11 @@
-#Import Gaussian Naive Bayes model
+# -*- coding: utf-8 -*-
+"""
+Name:Gad Kibet & Harrison Govan
+Project: CS701 Senior seminar
+"""
+#Import Libraries 
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import classification_report, confusion_matrix
-
 import pandas as pd
 from nltk.tokenize import TweetTokenizer
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -11,7 +15,7 @@ train_data = pd.read_csv('clean_train.csv')
 train_data.comment_text = train_data.comment_text.astype(str)
 
 
-
+"""Tokenize and vectorize data"""
 def train():
     df_label = train_data["toxic"].values
 
@@ -33,12 +37,14 @@ def train():
 
     # Create the bag of words using our vectorizer
     training_vect = word_vectorizer.fit_transform(X_train)
-
+    
+    #fit testing data
     test_vect = word_vectorizer.transform(X_test)
 
     return training_vect, test_vect, y_train, y_test
 
 
+"""Fit and evaluate model"""
 def main():
     x_train, x_test, y_train, y_test = train()
 
@@ -52,6 +58,7 @@ def main():
     # Model Accuracy, how often is the classifier correct?
     acc = gnb.score(x_test,y_test)
     
+    #Print evaluation statistics 
     print("Acuracy is {}".format(acc))
     print(confusion_matrix(y_test, y_pred))
     print(classification_report(y_test, y_pred))

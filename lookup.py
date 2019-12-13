@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Nov 25 18:33:39 2019
-
-@author: Gad
+Name:Gad Kibet & Harrison Govan
+Project: CS701 Senior seminar
 """
 
+
+"""
+This are the available list of english contractions from wikipedi. This dictionary is exported 
+for use in expanding contractions in the text document
+"""
 contractions = { 
 "ain't": "am not",
 "aren't": "are not",

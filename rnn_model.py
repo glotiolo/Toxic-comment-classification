@@ -2,9 +2,10 @@
 """
 Created on Tue Nov 19 22:05:14 2019
 
-@author: Gad
+Name:Gad Kibet & Harrison Govan
+Project: CS701 Senior seminar
 """
-
+#Import libraries 
 import pandas as pd
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
@@ -13,34 +14,39 @@ from keras.layers import  GlobalMaxPool1D
 from keras.models import Model
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
-from sklearn.metrics import confusion_matrix, roc_auc_score
+from sklearn.metrics import confusion_matrix, roc_auc_score,accuracy_score
+
 
 
 COMMENT = "comment_text"
-MAX_FEATURES = 20000 
-MAX_SEQUENCE_LENGTH = 200
+MAX_FEATURES = 20000 #maximum number of training features 
+MAX_SEQUENCE_LENGTH = 200 #Maximum length of taining input
+batch_size = 100 #set batch size
 
-
+"""Load data"""
 train_data = pd.read_csv("clean_train.csv")
 train_data.comment_text = train_data.comment_text.astype(str)
 
+"""Get comments and labels"""
 y_values = train_data["toxic"].values
 x_values_train = train_data[COMMENT]
 
 
-
+"""Tokenize and convert texts to integer sequences"""
 tokenizer = Tokenizer(num_words=MAX_FEATURES)
 
 tokenizer.fit_on_texts(list(x_values_train))
 
 tokenized_train = tokenizer.texts_to_sequences(x_values_train)
 
+"""Pad/clip input"""
 x_train = pad_sequences(tokenized_train,maxlen = MAX_SEQUENCE_LENGTH)
 
+"""Split data to training and test data"""
 X_train, X_test, Y_train, Y_test = train_test_split(x_train,y_values,test_size=0.2,
                random_state=13)
 
-
+"""Define model architecture"""
 def create_model():
     input_layer = Input(shape=(MAX_SEQUENCE_LENGTH, ))
     embed_dim = 128
@@ -59,25 +65,27 @@ def create_model():
     
     return model
 
-
+"""Fit and evaluate model"""
 def fit_model():
     epochs = 1
-    batch_size = 100
     model = create_model()
-    history = model.fit(x_train,y_values, batch_size=batch_size, 
+    model.fit(x_train,y_values, batch_size=batch_size, 
                         epochs=epochs, validation_split=0.1)
-    
     y_pred = model.predict(X_test,verbose=0)
+    
+    #Print evaluation statistics
     print("ROC_SCORE: {}".format(roc_auc_score(Y_test,y_pred)))
     y_pred = (y_pred > 0.5).astype(int)
     print("confusion matrix:")
+    accuracy = accuracy_score(Y_test,y_pred)
+    print("The accuracy is: {}".format(accuracy))
     print(confusion_matrix(Y_test,y_pred))
     print(classification_report(Y_test,y_pred))
-    return history,y_pred
+    
     
 
 if __name__ == "__main__":
-    history,y_pred = fit_model()
+    fit_model()
     
     
     

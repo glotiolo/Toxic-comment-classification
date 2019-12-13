@@ -2,8 +2,11 @@
 """
 Created on Thu Oct 24 12:34:09 2019
 
-@author: Gad
+Name:Gad Kibet & Harrison Govan
+Project: CS701 Senior seminar
 """
+
+#import libraries 
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from keras.preprocessing.text import Tokenizer
@@ -16,21 +19,17 @@ from keras.layers import Input
 from keras.layers import MaxPooling1D
 from keras.models import Model
 from sklearn.metrics import classification_report
-from sklearn.metrics import confusion_matrix, roc_auc_score
+from sklearn.metrics import confusion_matrix, roc_auc_score,accuracy_score
 
-
-
-
+#Load data 
 train_data = pd.read_csv("clean_train.csv")
 train_data.comment_text = train_data.comment_text.astype(str)
 
-
-
-
-batch_size = 100
 COMMENT = "comment_text"
 MAX_FEATURES = 20000 #maximum number of features
 MAX_SEQUENCE_LENGTH = 200 #maximum length of comments
+batch_size = 100 #set batch size for training
+
 
 
 """ Get the comments and labels"""
@@ -75,9 +74,10 @@ def create_Model():
     dense = Dense(128, activation='relu')(flatten)
     output = Dense(1, activation='sigmoid')(dense)
     
+    
     model = Model(inputs = input_layer, outputs = output)
     model.compile(optimizer ='adam',
-                  loss = 'categorical_crossentropy',
+                  loss = 'binary_crossentropy',
                   metrics = ['accuracy'])
     
     return model
@@ -88,24 +88,30 @@ def fit_model():
     epochs = 1
     model = create_Model()
     model.summary()
-    history = model.fit(X_train, Y_train, epochs=epochs, batch_size=batch_size,
+    model.fit(X_train, Y_train, epochs=epochs, batch_size=batch_size,
                         validation_split=0.1,
                         callbacks=[EarlyStopping(monitor='val_loss',
                                             patience=3,
                                             min_delta=0.0001)])
     
     y_pred = model.predict(X_test,verbose=0)
+    
+    #print evaluation statistics 
     print("ROC_SCORE: {}".format(roc_auc_score(Y_test,y_pred)))
+    
+    #Binarize prediction probabilities 
     y_pred = (y_pred > 0.5).astype(int)
     print("confusion matrix:")
+    accuracy = accuracy_score(Y_test,y_pred)
+    print("The accuracy is: {}".format(accuracy))
     print(confusion_matrix(Y_test,y_pred))
     print(classification_report(Y_test,y_pred))
-    return history,y_pred
+     
 
 
 
 if __name__ == "__main__":
-    history,y_hat = fit_model()   
+   fit_model()   
 
      
     
